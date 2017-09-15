@@ -1,0 +1,6 @@
+[submodule "models/baseline"]
+	path = models/baseline
+	url = git@github.com:FakeNewsChallenge/fnc-1-baseline.git
+[submodule "models/athene_system"]
+	path = models/athene_system
+	url = git@github.com:hanselowski/athene_system.git
