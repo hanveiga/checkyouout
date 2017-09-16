@@ -22,9 +22,9 @@ class Baseline(object):
     def fit_features(self, h, b, name=0):
         # check if there are features, add the rest
 
-        X_overlap = fe.gen_or_load_feats(fe.word_overlap_features, h, b, PATH + "overlap."+name+".npy")
-        X_refuting = fe.gen_or_load_feats(fe.refuting_features, h, b, PATH + "refuting."+name+".npy")
-        X_polarity = fe.gen_or_load_feats(fe.polarity_features, h, b, PATH + "polarity."+name+".npy")
+        X_overlap = fe.gen_or_load_feats(fe.word_overlap_features, h, b, PATH + "overlap.{}.npy".format(name))
+        X_refuting = fe.gen_or_load_feats(fe.refuting_features, h, b, PATH + "refuting.{}.npy".format(name))
+        X_polarity = fe.gen_or_load_feats(fe.polarity_features, h, b, PATH + "polarity.{}.npy".format(name))
         X_hand = fe.gen_or_load_feats(fe.hand_features, h, b, PATH + "hand."+name+".npy")
 
         X = np.c_[X_hand, X_polarity, X_refuting, X_overlap]
