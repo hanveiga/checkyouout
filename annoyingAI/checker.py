@@ -2,16 +2,48 @@ import os
 import json
 import falcon
 import sys
+import urllib.request
+from bs4 import BeautifulSoup
 
-from xyz import FactChecker
+MODELS_DIR = 'models'
+SERIALIZED_DIR = 'serialisations'
+BASELINE = os.path.join(SERIALIZED_DIR, 'baselinev2.pkl')
 
-# run as standalone script
-#sys.path.append('..')
+from .baseline_model import Baseline as FactChecker
 
+def simple_html_strip(url, minimum_word_count=10,
+                      ssplitter=lambda s: s.split(' ')):
+    # returns a list of hopefully text
+    with urllib.request.urlopen(url) as f:
+        soup = BeautifulSoup(f.read(), 'lxml')
+    article = soup.find('article')
+    if not article:
+        article = soup.find_all('p')
+    text = list(s for s in article.stripped_strings
+                if len(ssplitter(s)) > minimum_word_count)
+    return text
+
+def dummy_retrieve(query):
+    # ignores query
+    with open('tests/article1.txt') as f:
+        return [f.read()]
+
+def dummy_pick(sent_id, sent, labels_scores, related_docs):
+    # ignores scores, adds some ids
+    return {'sent_id': sent_id, 'sent': sent,
+            'results': [{'doc_id': i, 'label': label, 'doc': doc}
+            for i, ((label, _), doc) in enumerate(zip(labels_scores, related_docs))]}
+    
+def dummy_ssplit(text):
+    return [text]
+
+def dummy_clean(url):
+    return [url]
+    
 def msg(resp, body, code):
     resp.body = body
-    print body
-    resp.content_type = 'text'
+    print(body)
+    resp.content_type = 'application/json'
     resp.status = code
 
 def success_msg(resp, body, code=falcon.HTTP_200):
@@ -20,7 +52,7 @@ def success_msg(resp, body, code=falcon.HTTP_200):
 def error_msg(resp, body, code=falcon.HTTP_400):
     msg(resp, body, code)
 
-class Resource(object):
+class Resource:
     # * get input, act on text type and output clean sentence-split text
     #   + if url, get text, text process it??
     #   + video???
@@ -31,12 +63,19 @@ class Resource(object):
     #   + produce labels
     # * pick subset of retrieved docs
     # * return urls, xmls for these docs / videos
-    def __init__(self, path2model):
+    def __init__(self, path2model=BASELINE):
         self.fact_checker = FactChecker(path2model)
+        print('Current dir: %s' % os.getcwd())
+        
+    def clean_text(self, url):
+        return simple_html_strip(url)
+        
+    def ssplit_text(self, text):
+        return dummy_ssplit(text)
     
     def label_retrieved(self, sent, related_docs):
         # predict labels and probability scores for pairs of (sent, related_doc)
-        return [fact_checker.predict(sent, doc) for doc in related_docs]
+        return [self.fact_checker.give_label(sent, doc) for doc in related_docs]
     
     def retrieve_related(self, sent, n=100):
         # using Reuters API, retrieve `n` relevant documents / videos
@@ -44,32 +83,51 @@ class Resource(object):
         # + handle videos?
         # + clean texts...
         #@TODO
-        related = [TEST_BODY]
+        related = dummy_retrieve(sent)
         return related
     
-    def pick_best(self, labels_scores):
+    def pick_best(self, sent_id, sent, labels_scores, related_docs):
         # rank retrieved docs for output
         # + simplest: B label and then by score
-        return labels_scores[0][0]
+        return dummy_pick(sent_id, sent, labels_scores, related_docs)
 
     def on_get(self, req, resp):
-        input_type = req.get_param('input_type')
-        url = req.get_param('url', default=None)
-        if input_type == 'url':
-            clean_text = html2txt
-        elif input_type == 'video':
-            clean_text = video2txt
-        elif input_type == 'clean':
-            clean_text = lambda x: req.get_param('text')
+        data = json.loads(req.stream.read().decode('utf8'))
+        print('Data: ', data)
+        if 'url' in data:
+            url = data['url']
+            text = self.clean_text(url)
         else:
-            error_msg(resp, 'Unknown method.')
-        text = clean_text(url)
-        ssplit_text = ssplit_text(text)
+            assert 'text' in data
+            text = data['text']
+            #error_msg(resp, 'Unknown method.')
+        print('Text: ', text)
+        self.handle_text(resp, text)
+        
+    def handle_text(self, resp, ssplit_text):
+        print('Sentence-split Text: ', ssplit_text)
+        print('Number of sentences: ', len(ssplit_text))
         outputs = []
-        for sent in ssplit_text:
+        for sent_id, sent in enumerate(ssplit_text):
+            print('Sentence: ', sent)
             related_docs = self.retrieve_related(sent)
             labels_scores = self.label_retrieved(sent, related_docs)
-            output = self.pick_best(labels_scores)
+            output = self.pick_best(sent_id, sent, labels_scores, related_docs)
             outputs.append(output)
-        resp.body = json.dumps(outputs)
-        print('Successfully computed values for keys.')
+        print(outputs)
+        body = json.dumps(outputs, indent=True)
+        print('Successfully fact-checked this: {}'.format(ssplit_text))
+        success_msg(resp, body, code=falcon.HTTP_200)
+        
+class TextResource(Resource):    
+    def on_get(self, req, resp):
+        data = json.loads(req.stream.read().decode('utf8'))
+        ssplit_text = self.ssplit_text(data['text'])
+        super().handle_text(resp, ssplit_text)
+
+class UrlResource(Resource):
+    def on_get(self, req, resp):
+        data = json.loads(req.stream.read().decode('utf8'))
+        text = super().clean_text(data['url'])
+        # we need some sentence splitting here, too
+        super().handle_text(resp, text)
