@@ -8,7 +8,16 @@ import baseline as bs
 import baseline.utils.score as sc
 import baseline.feature_engineering as fe
 
-PATH = 'features/'
+# check if features folder exists in root/data/
+
+DATA_PATH = '../data/'
+FEATURES_PATH = 'features/'
+print(DATA_PATH+FEATURES_PATH)
+if not os.path.exists(DATA_PATH+FEATURES_PATH):
+    print('entered')
+    os.mkdir(DATA_PATH+FEATURES_PATH)
+
+FEATURES_PATH = DATA_PATH + FEATURES_PATH
 
 class Baseline(object):
     def __init__(self, path):
@@ -21,11 +30,11 @@ class Baseline(object):
 
     def fit_features(self, h, b, name=0):
         # check if there are features, add the rest
-
-        X_overlap = fe.gen_or_load_feats(fe.word_overlap_features, h, b, PATH + "overlap.{}.npy".format(name))
-        X_refuting = fe.gen_or_load_feats(fe.refuting_features, h, b, PATH + "refuting.{}.npy".format(name))
-        X_polarity = fe.gen_or_load_feats(fe.polarity_features, h, b, PATH + "polarity.{}.npy".format(name))
-        X_hand = fe.gen_or_load_feats(fe.hand_features, h, b, PATH + "hand."+name+".npy")
+        name = str(name)
+        X_overlap = fe.gen_or_load_feats(fe.word_overlap_features, h, b, FEATURES_PATH + "overlap.{}.npy".format(name))
+        X_refuting = fe.gen_or_load_feats(fe.refuting_features, h, b, FEATURES_PATH + "refuting.{}.npy".format(name))
+        X_polarity = fe.gen_or_load_feats(fe.polarity_features, h, b, FEATURES_PATH + "polarity.{}.npy".format(name))
+        X_hand = fe.gen_or_load_feats(fe.hand_features, h, b, FEATURES_PATH + "hand."+name+".npy")
 
         X = np.c_[X_hand, X_polarity, X_refuting, X_overlap]
         return X
@@ -42,3 +51,12 @@ class Baseline(object):
         predicted = self._labels[int(self._clf.predict(X))]
 
         return predicted, self._clf.predict_proba(X)
+
+
+if __name__=='__main__':
+    model = Baseline(sys.argv[1])
+    stance = "Woman detained in Lebanon is not al-Baghdadi's wife, Iraq says"
+    with open('../tests/article1.txt') as f:
+        text = f.read()
+    a, b =model.give_label(stance, text)
+    print(a)
