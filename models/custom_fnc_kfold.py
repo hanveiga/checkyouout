@@ -35,10 +35,10 @@ def generate_features(stances,dataset,name):
         h.append(stance['Headline'])
         b.append(dataset.articles[stance['Body ID']])
 
-    X_overlap = gen_or_load_feats(word_overlap_features, h, b, "features/overlap."+name+".npy")
-    X_refuting = gen_or_load_feats(refuting_features, h, b, "features/refuting."+name+".npy")
-    X_polarity = gen_or_load_feats(polarity_features, h, b, "features/polarity."+name+".npy")
-    X_hand = gen_or_load_feats(hand_features, h, b, "features/hand."+name+".npy")
+    X_overlap = gen_or_load_feats(word_overlap_features, h, b, "baseline/features/overlap."+name+".npy")
+    X_refuting = gen_or_load_feats(refuting_features, h, b, "baseline/features/refuting."+name+".npy")
+    X_polarity = gen_or_load_feats(polarity_features, h, b, "baseline/features/polarity."+name+".npy")
+    X_hand = gen_or_load_feats(hand_features, h, b, "baseline/features/hand."+name+".npy")
 
     X = np.c_[X_hand, X_polarity, X_refuting, X_overlap]
     return X,y
@@ -53,7 +53,7 @@ if __name__ == "__main__":
 
     #Load the training dataset and generate folds
     d = DataSet(path=DATASET_DIR)
-    folds,hold_out = kfold_split(d,n_folds=10, base_dir=BASE_DIR)
+    folds,hold_out = kfold_split(d,n_folds=1, base_dir=BASE_DIR)
     fold_stances, hold_out_stances = get_stances_for_folds(d,folds,hold_out)
 
     # Load the competition dataset

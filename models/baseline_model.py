@@ -4,12 +4,26 @@ import os,sys,inspect
 #currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 #parentdir = os.path.dirname(currentdir)
 #sys.path.insert(0,parentdir)
+
+
+# Directory with models
+MODELS_DIR = os.path.dirname(__file__)
+# Baseline model from http://www.fakenewschallenge.org/
+BASELINE_DIR = os.path.join(MODELS_DIR, 'baseline')
+sys.path.append(BASELINE_DIR)
+# FakeNews challenge dataset & train/dev splits
+#DATASET_DIR = os.path.join(BASELINE_DIR, 'fnc-1')
+#BASE_DIR = os.path.join(BASELINE_DIR, 'splits')
+# Serialzation directory
+SERIALIZED_DIR = os.path.join(os.path.dirname(MODELS_DIR), 'serialisations')
+
+
 import baseline as bs
 import baseline.utils.score as sc
 import baseline.feature_engineering as fe
 
 # check if features folder exists in root/data/
-
+os.path.append(__)
 DATA_PATH = '../data/'
 FEATURES_PATH = 'features/'
 print(DATA_PATH+FEATURES_PATH)

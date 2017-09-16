@@ -4,6 +4,7 @@ import falcon
 import sys
 import urllib.request
 from bs4 import BeautifulSoup
+#from reuters_datasource import ReutersDatasource
 
 MODELS_DIR = 'models'
 SERIALIZED_DIR = 'serialisations'
@@ -18,27 +19,36 @@ def simple_html_strip(url, minimum_word_count=10,
     # returns a list of hopefully text
     with urllib.request.urlopen(url) as f:
         soup = BeautifulSoup(f.read(), 'lxml')
-    article = soup.find('article')
-    if not article:
-        article = soup.find_all('p')
-    text = list(s for s in article.stripped_strings
-                if len(ssplitter(s)) > minimum_word_count)
+    #article = soup.find('article')
+    #if article: article = article.find_all('p')
+    #else:
+    article = soup.find_all('p')
+    # sentence splitting might have to go in here...
+    # indices for p tags or article.p tags
+    text = []
+    for i, s in enumerate(article):
+        s = ''.join(list(s.stripped_strings))
+        if len(ssplitter(s)) > minimum_word_count:
+            out = {'p_id' : i, 'text' : s, 'results' : []}
+            text.append(out)
+    #print('Text out: ', text)
     return text
 
 def dummy_retrieve(query, dummy_article=DUMMY_TRUTH):
     # ignores query
     with open(os.path.join(TEST_DIR, dummy_article)) as f:
-        return [f.read()]
+        return [f.read()]    
 
-def dummy_pick(sent_id, sent, labels_scores, related_docs):
+def dummy_pick(sent_dict, labels_scores, related_docs):
     # ignores scores, adds some ids
-    return {'sent_id': sent_id, 'sent': sent,
-            'results': [{'doc_id': i, 'label': label, 'doc': doc}
-            for i, ((label, _), doc) in enumerate(zip(labels_scores, related_docs))
-            if label in ['agree', 'disagree', 'discuss']]}  # , 'unrelated'
+    sent_dict['results'] = [
+        {'doc_id': i, 'label': label, 'doc': doc}
+        for i, ((label, _), doc) in enumerate(zip(labels_scores, related_docs))
+        if label in ['agree', 'disagree', 'discuss']]  # , 'unrelated'
+    return sent_dict  
     
 def dummy_ssplit(text):
-    return [text]
+    return [{'id':0, 'text': text}]
 
 def dummy_clean(url):
     return [url]
@@ -69,6 +79,7 @@ class Resource:
     def __init__(self, path2model=BASELINE):
         self.fact_checker = FactChecker(path2model)
         print('Current dir: %s' % os.getcwd())
+        #self.rd = ReutersDatasource()
         
     def clean_text(self, url):
         return simple_html_strip(url)
@@ -86,13 +97,19 @@ class Resource:
         # + handle videos?
         # + clean texts...
         #@TODO
+        #self.rd.search_by_keyword(self, keyword,
+        #                  limit=50,
+        #                  label='Politics',
+        #                  mediaType='V', # video
+        #                  verbose=False)
+        
         related = dummy_retrieve(sent)
         return related
     
-    def pick_best(self, sent_id, sent, labels_scores, related_docs):
+    def pick_best(self, sent_dict, labels_scores, related_docs):
         # rank retrieved docs for output
         # + simplest: B label and then by score
-        return dummy_pick(sent_id, sent, labels_scores, related_docs)
+        return dummy_pick(sent_dict, labels_scores, related_docs)
 
     def on_post(self, req, resp):
         data = json.loads(req.stream.read().decode('utf8'))
@@ -108,15 +125,15 @@ class Resource:
         self.handle_text(resp, text)
         
     def handle_text(self, resp, ssplit_text):
-        print('Sentence-split Text: ', ssplit_text)
+        #print('Sentence-split Text: ', ssplit_text)
         print('Number of sentences: ', len(ssplit_text))
         outputs = []
-        for sent_id, sent in enumerate(ssplit_text):
-            print('Sentence: ', sent)
+        for sent_dict in ssplit_text:
+            sent = sent_dict['text']
             related_docs = self.retrieve_related(sent)
-            print('Related docs: ', related_docs)
             labels_scores = self.label_retrieved(sent, related_docs)
-            output = self.pick_best(sent_id, sent, labels_scores, related_docs)
+            output = self.pick_best(sent_dict, labels_scores, related_docs)
+            if not sent_dict['results']: continue  # Why is this not filtered??
             outputs.append(output)
         print('Outputs: ', outputs)
         body = json.dumps(outputs, indent=True)
