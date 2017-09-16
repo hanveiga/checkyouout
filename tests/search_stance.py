@@ -1,13 +1,15 @@
 import nltk.data
-import spacy
 import analyze as an
 import json
 from sklearn.metrics.pairwise import cosine_distances
 from sklearn.externals import joblib
+import permid as per
 
 vectorizer = joblib.load('../serialisations/vectorizer.pkl')
 tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
 GOOGLEAPIKEY = 'AIzaSyDjPD2VBeUpBtxm6rN-UM6BFvnHtSAHIJo'
+
+sender = per.PermidSender(per.token)
 
 def get_named_entities(sentence):
     response = an.analyze_entities(sentence)
@@ -67,10 +69,13 @@ def filter_results(sentence, list_of_results):
 def compute_relevance(sentence, text):
     a = vectorizer.transform([sentence])
     b = vectorizer.transform([text])
-    value = cosine_distances(a,b)
-    print(value)
-
-    return
+    distance = cosine_distances(a,b)
+    topica = sender.get_topics(sentence)
+    topicb = sender.get_topics(text)
+    topics = (len(set(topica).intersection(topicb))+1)/float(len(topicb)+1.)
+    lamb = 0.3
+    value = (1-lamb)*distance + lamb*topics
+    return value
 
 def test_relevance_of_results(sentence, parent_article, item):
     # eats stance, parent_article (or other stuff and an reuters item
@@ -82,6 +87,11 @@ if __name__=='__main__':
     #    text = f.read()
     #sentences = pick_sentences(text)
     #print (sentences)
-    compute_relevance('This is bullshit','There was a lot of bullshit happening in ZH that day.')
+
+    sender = per.PermidSender(per.token)
+    topics = sender.get_topics('Obama Care was repealled.')
+    print(topics)
+    val = compute_relevance('This is bullshit','There was a lot of bullshit happening in ZH that day.')
+    print (val)
     #for sentence in sentences:
     #    search_with_sentence(sentence)
