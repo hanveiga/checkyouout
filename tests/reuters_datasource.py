@@ -39,16 +39,29 @@ class ReutersDatasource:
 
 rd = ReutersDatasource()
 
-def search_by_keyword(keyword):
+def search_by_keyword(keyword, id_result):
     keyword = '"'+keyword+'"'
     print(keyword)
+    
     res = rd.call('search',args={'q':'(main:'+keyword+')', 'language':'en'}) #||headline:USA OR Canada)||-headline:Bush'})
     for a in res:
         try:
             print (a.findall('id')[0].text)
-            print (a.findall('headline')[0].text)
+            id_result.append(a.findall('id')[0].text)
+            headline_result.append(a.findall('headline')[0].text)
+            #print (a.findall('headline')[0].text)
+            #print (a.findall('channel')[0].text)
         except:
-            print('dunno')
+            print('NA')
+    return id_result
+
+
+def retrieve_item(retrieve_id):
+    rd = ReutersDatasource()
+    tree = rd.call('item',args= {'id':retrieve_id})
+    print(tree.findall('body'))
+  
+
 
 """def demo():
     # fet a list of all available channels
@@ -74,4 +87,12 @@ def search_by_keyword(keyword):
 """
 if __name__=='__main__':
     #demo()
-    search_by_keyword(sys.argv[1])
+    id_result = []
+    headline_result = []
+    
+    #search_by_keyword(sys.argv[1], id_result)
+    #for  i in range(0,len(id_result)):
+    #    print ("id: " + id_result[i], "channel: " + headline_result[i])
+
+
+    retrieve_item('tag:reuters.com,2017:newsml_ISS888521:377561017')
