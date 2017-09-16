@@ -3,8 +3,9 @@ import json
 import falcon
 import sys
 import urllib.request
+import urllib.error
+import nltk
 from bs4 import BeautifulSoup
-#from reuters_datasource import ReutersDatasource
 
 MODELS_DIR = 'models'
 SERIALIZED_DIR = 'serialisations'
@@ -13,6 +14,7 @@ BASELINE = os.path.join(SERIALIZED_DIR, 'baselinev2.pkl')
 DUMMY_TRUTH = 'article2.txt'
 
 from .baseline_model import Baseline as FactChecker
+from .reuters_datasource import ReutersDatasource
 
 def simple_html_strip(url, minimum_word_count=10,
                       ssplitter=lambda s: s.split(' ')):
@@ -42,8 +44,8 @@ def dummy_retrieve(query, dummy_article=DUMMY_TRUTH):
 def dummy_pick(sent_dict, labels_scores, related_docs):
     # ignores scores, adds some ids
     sent_dict['results'] = [
-        {'doc_id': i, 'label': label, 'doc': doc}
-        for i, ((label, _), doc) in enumerate(zip(labels_scores, related_docs))
+        {'doc_id': doc['doc_id'], 'label': label, 'doc_text': doc['text']}
+        for (label, _), doc in zip(labels_scores, related_docs)
         if label in ['agree', 'disagree', 'discuss']]  # , 'unrelated'
     return sent_dict  
     
@@ -79,7 +81,7 @@ class Resource:
     def __init__(self, path2model=BASELINE):
         self.fact_checker = FactChecker(path2model)
         print('Current dir: %s' % os.getcwd())
-        #self.rd = ReutersDatasource()
+        self.rd = ReutersDatasource()
         
     def clean_text(self, url):
         return simple_html_strip(url)
@@ -89,7 +91,7 @@ class Resource:
     
     def label_retrieved(self, sent, related_docs):
         # predict labels and probability scores for pairs of (sent, related_doc)
-        return [self.fact_checker.give_label(sent, doc) for doc in related_docs]
+        return [self.fact_checker.give_label(sent, doc['text']) for doc in related_docs]
     
     def retrieve_related(self, sent, n=100):
         # using Reuters API, retrieve `n` relevant documents / videos
@@ -97,13 +99,25 @@ class Resource:
         # + handle videos?
         # + clean texts...
         #@TODO
-        #self.rd.search_by_keyword(self, keyword,
-        #                  limit=50,
-        #                  label='Politics',
-        #                  mediaType='V', # video
-        #                  verbose=False)
-        
-        related = dummy_retrieve(sent)
+        keywords = [w for w in nltk.word_tokenize(sent) if w.isupper()]
+        try:
+            if keywords:
+                ids_headlines = self.rd.search_by_keyword(keywords,
+                                                          limit=20,
+                                                          label='Politics',
+                                                          mediaType='V', # video
+                                                          verbose=True)
+            else:
+                ids_headlines = []
+        except urllib.error.HTTPError as e:
+            print("Gracefully pretending it's not happening...")
+            print('Keywords: ', keywords)
+        #related = dummy_retrieve(sent)
+        related = []
+        for i, h in ids_headlines:
+            if (i or i is not None):
+                related.append({'doc_id':i, 'text':h})
+                print('Related text: ', h)
         return related
     
     def pick_best(self, sent_dict, labels_scores, related_docs):

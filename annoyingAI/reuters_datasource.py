@@ -40,7 +40,7 @@ class ReutersDatasource:
                           limit=50,
                           label='Politics',
                           mediaType='V', # video
-                          verbose=False):
+                          verbose=True):
         keywords = ['"{}"'.format(k) if ' ' in k else k for k in keywords]
         keyword = ' AND '.join(keywords)
         if verbose: print('Search query: ', keyword)

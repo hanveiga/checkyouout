@@ -1,0 +1,227 @@
+[
+ {
+  "p_id": 1,
+  "results": [
+   {
+    "label": "agree",
+    "doc_id": "tag:reuters.com,2017:newsml_OV6YPQDPB:1",
+    "doc_text": "After latest N.Korea missile test, U.S. says it has military options"
+   },
+   {
+    "label": "discuss",
+    "doc_id": "tag:reuters.com,2017:newsml_WD6YUFFWN:2",
+    "doc_text": "EU to seek reassurance from U.S. over data protection"
+   },
+   {
+    "label": "agree",
+    "doc_id": "tag:reuters.com,2017:newsml_WD6YPM88Z:2",
+    "doc_text": "Mexico foreign minister calls latest U.S. NAFTA proposal 'redundant'"
+   },
+   {
+    "label": "discuss",
+    "doc_id": "tag:reuters.com,2017:newsml_OV6YPQ867:2",
+    "doc_text": "Trump confident U.S. options on NK \"effective and overwhelming\""
+   },
+   {
+    "label": "agree",
+    "doc_id": "tag:reuters.com,2017:newsml_WD6YPMBEV:2",
+    "doc_text": "China's Washington envoy says U.S. should stop threats over North Korea"
+   },
+   {
+    "label": "discuss",
+    "doc_id": "tag:reuters.com,2017:newsml_WD6YPLX6V:2",
+    "doc_text": "U.N. Security Council condemns North Korea missile launch. Russia says U.S. should stay in Iran nuclear deal"
+   },
+   {
+    "label": "agree",
+    "doc_id": "tag:reuters.com,2017:newsml_WD6YPKMKN:2",
+    "doc_text": "Tillerson says North Korean threat demands international response"
+   },
+   {
+    "label": "disagree",
+    "doc_id": "tag:reuters.com,2017:newsml_WD6YPLSG7:2",
+    "doc_text": "Trump says options for dealing with North Korea are 'overwhelming'"
+   },
+   {
+    "label": "agree",
+    "doc_id": "tag:reuters.com,2017:newsml_WD6YUGK7B:2",
+    "doc_text": "Chinese at the border are worried after new North Korea missile test"
+   }
+  ],
+  "text": "U.S. Ambassador to the United Nations Nikki Haley warned North Korea on Friday that she is more than willing to let Defense Secretary Jim Mattis deal with the nuclear threat from Pyongyang if sanctions do not work."
+ },
+ {
+  "p_id": 3,
+  "results": [
+   {
+    "label": "discuss",
+    "doc_id": "tag:reuters.com,2017:newsml_WD6YPLXZB:2",
+    "doc_text": "U.N. Security Council condemns North Korea missile test"
+   },
+   {
+    "label": "discuss",
+    "doc_id": "tag:reuters.com,2017:newsml_WD6YPLX6V:2",
+    "doc_text": "U.N. Security Council condemns North Korea missile launch. Russia says U.S. should stay in Iran nuclear deal"
+   },
+   {
+    "label": "discuss",
+    "doc_id": "tag:reuters.com,2017:newsml_WD6YPM1XJ:1",
+    "doc_text": "Trump heads to his New Jersey resort ahead of first U.N. meeting"
+   },
+   {
+    "label": "discuss",
+    "doc_id": "tag:reuters.com,2017:newsml_WD6YPLQ2V:2",
+    "doc_text": "U.N. Security Council meets on North Korea missile test"
+   },
+   {
+    "label": "discuss",
+    "doc_id": "tag:reuters.com,2017:newsml_OV6YUPFFV:1",
+    "doc_text": "Congo security forces kill at least 30 Burundian refugees - sources"
+   },
+   {
+    "label": "discuss",
+    "doc_id": "tag:reuters.com,2017:newsml_OV6YUPJE3:1",
+    "doc_text": "At least 30 refugees thought killed by DRC forces"
+   },
+   {
+    "label": "discuss",
+    "doc_id": "tag:reuters.com,2017:newsml_WD6YPM4AR:2",
+    "doc_text": "Peru's Kuczynski eyes naming VP as new prime minister"
+   }
+  ],
+  "text": "But she said there's only so much the U.N. Security Council can do \u201cwhen you cut 90 percent of the trade and 30 percent of the oil.\u201d"
+ },
+ {
+  "p_id": 5,
+  "results": [
+   {
+    "label": "discuss",
+    "doc_id": "tag:reuters.com,2017:newsml_OV6YPQDPB:1",
+    "doc_text": "After latest N.Korea missile test, U.S. says it has military options"
+   },
+   {
+    "label": "discuss",
+    "doc_id": "tag:reuters.com,2017:newsml_WD6YPM88Z:2",
+    "doc_text": "Mexico foreign minister calls latest U.S. NAFTA proposal 'redundant'"
+   },
+   {
+    "label": "agree",
+    "doc_id": "tag:reuters.com,2017:newsml_WD6YPMBEV:2",
+    "doc_text": "China's Washington envoy says U.S. should stop threats over North Korea"
+   },
+   {
+    "label": "discuss",
+    "doc_id": "tag:reuters.com,2017:newsml_WD6YPLX6V:2",
+    "doc_text": "U.N. Security Council condemns North Korea missile launch. Russia says U.S. should stay in Iran nuclear deal"
+   },
+   {
+    "label": "discuss",
+    "doc_id": "tag:reuters.com,2017:newsml_WD6YPLSG7:2",
+    "doc_text": "Trump says options for dealing with North Korea are 'overwhelming'"
+   },
+   {
+    "label": "discuss",
+    "doc_id": "tag:reuters.com,2017:newsml_WD6YUGK7B:2",
+    "doc_text": "Chinese at the border are worried after new North Korea missile test"
+   }
+  ],
+  "text": "North Korea conducted its longest-ever test flight of a ballistic missile Friday, sending an intermediate-range weapon hurtling over U.S. ally Japan into the northern Pacific Ocean in a launch that signals both defiance of its rivals and a big technological advance."
+ },
+ {
+  "p_id": 6,
+  "results": [
+   {
+    "label": "discuss",
+    "doc_id": "tag:reuters.com,2017:newsml_OV6YPQDPB:1",
+    "doc_text": "After latest N.Korea missile test, U.S. says it has military options"
+   },
+   {
+    "label": "discuss",
+    "doc_id": "tag:reuters.com,2017:newsml_WD6YUFFWN:2",
+    "doc_text": "EU to seek reassurance from U.S. over data protection"
+   },
+   {
+    "label": "discuss",
+    "doc_id": "tag:reuters.com,2017:newsml_WD6YPM88Z:2",
+    "doc_text": "Mexico foreign minister calls latest U.S. NAFTA proposal 'redundant'"
+   },
+   {
+    "label": "discuss",
+    "doc_id": "tag:reuters.com,2017:newsml_OV6YPQ867:2",
+    "doc_text": "Trump confident U.S. options on NK \"effective and overwhelming\""
+   },
+   {
+    "label": "discuss",
+    "doc_id": "tag:reuters.com,2017:newsml_WD6YPMBEV:2",
+    "doc_text": "China's Washington envoy says U.S. should stop threats over North Korea"
+   },
+   {
+    "label": "discuss",
+    "doc_id": "tag:reuters.com,2017:newsml_WD6YPLX6V:2",
+    "doc_text": "U.N. Security Council condemns North Korea missile launch. Russia says U.S. should stay in Iran nuclear deal"
+   },
+   {
+    "label": "discuss",
+    "doc_id": "tag:reuters.com,2017:newsml_WD6YPM4AR:2",
+    "doc_text": "Peru's Kuczynski eyes naming VP as new prime minister"
+   }
+  ],
+  "text": "McMaster stressed Friday that the U.S. is still trying to resolve the conflict diplomatically. Joining Haley at the briefing, he said it\u2019s important to employ \u201crigorous enforcement of those sanctions\u201d in pursuit of that route but acknowledged the United States is willing to use force."
+ },
+ {
+  "p_id": 10,
+  "results": [
+   {
+    "label": "discuss",
+    "doc_id": "tag:reuters.com,2017:newsml_OV6YPQDPB:1",
+    "doc_text": "After latest N.Korea missile test, U.S. says it has military options"
+   },
+   {
+    "label": "discuss",
+    "doc_id": "tag:reuters.com,2017:newsml_OV6YPQC4F:1",
+    "doc_text": "Judge sides against Trump in fight over 'sanctuary cities'"
+   },
+   {
+    "label": "discuss",
+    "doc_id": "tag:reuters.com,2017:newsml_WD6YUFFWN:2",
+    "doc_text": "EU to seek reassurance from U.S. over data protection"
+   },
+   {
+    "label": "discuss",
+    "doc_id": "tag:reuters.com,2017:newsml_WD6YPM88Z:2",
+    "doc_text": "Mexico foreign minister calls latest U.S. NAFTA proposal 'redundant'"
+   },
+   {
+    "label": "discuss",
+    "doc_id": "tag:reuters.com,2017:newsml_OV6YPQ867:2",
+    "doc_text": "Trump confident U.S. options on NK \"effective and overwhelming\""
+   },
+   {
+    "label": "discuss",
+    "doc_id": "tag:reuters.com,2017:newsml_WD6YPMBEV:2",
+    "doc_text": "China's Washington envoy says U.S. should stop threats over North Korea"
+   },
+   {
+    "label": "discuss",
+    "doc_id": "tag:reuters.com,2017:newsml_WD6YPLX6V:2",
+    "doc_text": "U.N. Security Council condemns North Korea missile launch. Russia says U.S. should stay in Iran nuclear deal"
+   },
+   {
+    "label": "discuss",
+    "doc_id": "tag:reuters.com,2017:newsml_WD6YPKMKN:2",
+    "doc_text": "Tillerson says North Korean threat demands international response"
+   },
+   {
+    "label": "discuss",
+    "doc_id": "tag:reuters.com,2017:newsml_WD6YPLSG7:2",
+    "doc_text": "Trump says options for dealing with North Korea are 'overwhelming'"
+   },
+   {
+    "label": "discuss",
+    "doc_id": "tag:reuters.com,2017:newsml_WD6YUGK7B:2",
+    "doc_text": "Chinese at the border are worried after new North Korea missile test"
+   }
+  ],
+  "text": "Since President Trump threatened North Korea with \"fire and fury\" in August, the North has conducted its most powerful nuclear test, threatened to send missiles into the waters around the U.S. Pacific island territory of Guam and launched two missiles of increasing range over Japan."
+ }
+]
