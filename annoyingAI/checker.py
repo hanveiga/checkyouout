@@ -94,7 +94,7 @@ class Resource:
         # + simplest: B label and then by score
         return dummy_pick(sent_id, sent, labels_scores, related_docs)
 
-    def on_get(self, req, resp):
+    def on_post(self, req, resp):
         data = json.loads(req.stream.read().decode('utf8'))
         print('Data: ', data)
         if 'url' in data:
@@ -124,13 +124,13 @@ class Resource:
         success_msg(resp, body, code=falcon.HTTP_200)
         
 class TextResource(Resource):    
-    def on_get(self, req, resp):
+    def on_post(self, req, resp):
         data = json.loads(req.stream.read().decode('utf8'))
         ssplit_text = self.ssplit_text(data['text'])
         super().handle_text(resp, ssplit_text)
 
 class UrlResource(Resource):
-    def on_get(self, req, resp):
+    def on_post(self, req, resp):
         data = json.loads(req.stream.read().decode('utf8'))
         text = super().clean_text(data['url'])
         # we need some sentence splitting here, too
