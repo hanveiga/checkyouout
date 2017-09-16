@@ -30,7 +30,7 @@ class Baseline(object):
         X = np.c_[X_hand, X_polarity, X_refuting, X_overlap]
         return X
 
-    def give_label(stance, body):
+    def give_label(self, stance, body):
 
         """ stance - str 'headline'
             body - str 'article'
