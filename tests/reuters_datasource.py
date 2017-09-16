@@ -40,7 +40,9 @@ class ReutersDatasource:
 rd = ReutersDatasource()
 
 def search_by_keyword(keyword):
-    res = rd.call('search',args={'query':"mexico boarders", 'language':'en', 'geography':'GBR', 'geography':'USA' }) #||headline:USA OR Canada)||-headline:Bush'})
+    keyword = '"'+keyword+'"'
+    print(keyword)
+    res = rd.call('search',args={'q':'(main:'+keyword+')', 'language':'en'}) #||headline:USA OR Canada)||-headline:Bush'})
     for a in res:
         try:
             print (a.findall('id')[0].text)
