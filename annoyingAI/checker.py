@@ -7,7 +7,9 @@ from bs4 import BeautifulSoup
 
 MODELS_DIR = 'models'
 SERIALIZED_DIR = 'serialisations'
+TEST_DIR = 'tests'
 BASELINE = os.path.join(SERIALIZED_DIR, 'baselinev2.pkl')
+DUMMY_TRUTH = 'article2.txt'
 
 from .baseline_model import Baseline as FactChecker
 
@@ -23,16 +25,17 @@ def simple_html_strip(url, minimum_word_count=10,
                 if len(ssplitter(s)) > minimum_word_count)
     return text
 
-def dummy_retrieve(query):
+def dummy_retrieve(query, dummy_article=DUMMY_TRUTH):
     # ignores query
-    with open('tests/article1.txt') as f:
+    with open(os.path.join(TEST_DIR, dummy_article)) as f:
         return [f.read()]
 
 def dummy_pick(sent_id, sent, labels_scores, related_docs):
     # ignores scores, adds some ids
     return {'sent_id': sent_id, 'sent': sent,
             'results': [{'doc_id': i, 'label': label, 'doc': doc}
-            for i, ((label, _), doc) in enumerate(zip(labels_scores, related_docs))]}
+            for i, ((label, _), doc) in enumerate(zip(labels_scores, related_docs))
+            if label in ['agree', 'disagree', 'discuss']]}  # , 'unrelated'
     
 def dummy_ssplit(text):
     return [text]
@@ -111,10 +114,11 @@ class Resource:
         for sent_id, sent in enumerate(ssplit_text):
             print('Sentence: ', sent)
             related_docs = self.retrieve_related(sent)
+            print('Related docs: ', related_docs)
             labels_scores = self.label_retrieved(sent, related_docs)
             output = self.pick_best(sent_id, sent, labels_scores, related_docs)
             outputs.append(output)
-        print(outputs)
+        print('Outputs: ', outputs)
         body = json.dumps(outputs, indent=True)
         print('Successfully fact-checked this: {}'.format(ssplit_text))
         success_msg(resp, body, code=falcon.HTTP_200)
