@@ -36,12 +36,13 @@ class ReutersDatasource:
     def call(self, method, args={}):
         return self._call(method, args, False)
 
-    def search_by_keyword(self, keyword,
+    def search_by_keyword(self, keywords,
                           limit=50,
                           label='Politics',
                           mediaType='V', # video
                           verbose=False):
-        keyword = '"'+keyword+'"'
+        keywords = ['"{}"'.format(k) if ' ' in k else k for k in keywords]
+        keyword = ' AND '.join(keywords)
         if verbose: print('Search query: ', keyword)
         id_results = []
         res = self.call('search',
@@ -84,6 +85,6 @@ if __name__=='__main__':
     id_result = []
     headline_result = []
     rd = ReutersDatasource()
-    id_result = rd.search_by_keyword(sys.argv[1], limit=100, verbose=True)
+    id_result = rd.search_by_keyword([sys.argv[1]], limit=100, verbose=True)
     for retrieve_id, headline in id_result:
-        if retrieve_id: rd.retrieve_item(retrieve_id)
+        if retrieve_id: rd.retrieve_item(retrieve_id, verbose=True)
