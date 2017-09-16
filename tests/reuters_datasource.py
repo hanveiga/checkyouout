@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 import urllib.request, urllib.error, urllib.parse
 import urllib.request, urllib.parse, urllib.error
 import time
@@ -39,10 +38,10 @@ class ReutersDatasource:
 
 rd = ReutersDatasource()
 
-def search_by_keyword(keyword, id_result):
+def search_by_keyword(keyword):
     keyword = '"'+keyword+'"'
     print(keyword)
-    
+    id_result = []
     res = rd.call('search',args={'q':'(main:'+keyword+')', 'language':'en'}) #||headline:USA OR Canada)||-headline:Bush'})
     for a in res:
         try:
@@ -58,10 +57,14 @@ def search_by_keyword(keyword, id_result):
 
 def retrieve_item(retrieve_id):
     rd = ReutersDatasource()
-    tree = rd.call('item',args= {'id':retrieve_id})
-    print(tree.findall('body'))
-  
+    tree = rd.call('item',args= {'id':retrieve_id,'entityMarkupField':'all','entityMarkup':'newsml'})
+    for a in tree:
+        print(a.tag,a.text)
+        k = a.findall(a.tag)
+        for b in k:
+            print (b.tag)
 
+    return tree
 
 """def demo():
     # fet a list of all available channels
@@ -85,14 +88,13 @@ def retrieve_item(retrieve_id):
     print("\n\nList of items:\n\tid\theadline")
     print("\n".join(["\t%(id)s\t%(headline)s"%x for x in items]))
 """
+
 if __name__=='__main__':
-    #demo()
+    # call me: python reuters_datasource.py 'North Korea'
     id_result = []
     headline_result = []
-    
-    #search_by_keyword(sys.argv[1], id_result)
-    #for  i in range(0,len(id_result)):
-    #    print ("id: " + id_result[i], "channel: " + headline_result[i])
 
-
-    retrieve_item('tag:reuters.com,2017:newsml_ISS888521:377561017')
+    id_result = search_by_keyword(sys.argv[1])
+    for  i in range(0,len(id_result)):
+        print ("id: " + id_result[i], "channel: " + headline_result[i])
+        retrieve_item(id_result[i])
