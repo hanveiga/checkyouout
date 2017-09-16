@@ -3,7 +3,7 @@
 import urllib.request, urllib.error, urllib.parse
 import urllib.request, urllib.parse, urllib.error
 import time
-
+import sys
 from xml.etree.ElementTree import ElementTree, fromstring
 
 USERNAME = "HackZurichAPI"
@@ -32,13 +32,23 @@ class ReutersDatasource:
         url = root_url + method + '?' + urllib.parse.urlencode(args)
         resp = urllib.request.urlopen(url, timeout=10)
         rawd = resp.read()
-        return fromstring(rawd)  # parse xml    
+        return fromstring(rawd)  # parse xml
 
     def call(self, method, args={}):
         return self._call(method, args, False)
-    
 
-def demo():
+rd = ReutersDatasource()
+
+def search_by_keyword(keyword):
+    res = rd.call('search',args={'query':"mexico boarders", 'language':'en', 'geography':'GBR', 'geography':'USA' }) #||headline:USA OR Canada)||-headline:Bush'})
+    for a in res:
+        try:
+            print (a.findall('id')[0].text)
+            print (a.findall('headline')[0].text)
+        except:
+            print('dunno')
+
+"""def demo():
     # fet a list of all available channels
     rd = ReutersDatasource()
     tree = rd.call('channels')
@@ -47,7 +57,7 @@ def demo():
                  for c in tree.findall('channelInformation') ]
     print("List of channels:\n\talias\tdescription")
     print("\n".join(["\t%(alias)s\t%(description)s"%x for x in channels]))
-        
+
     # fetch id's and headlines for a channel
     rd = ReutersDatasource()
     tree = rd.call('items',
@@ -59,6 +69,7 @@ def demo():
               for c in tree.findall('result') ]
     print("\n\nList of items:\n\tid\theadline")
     print("\n".join(["\t%(id)s\t%(headline)s"%x for x in items]))
-
+"""
 if __name__=='__main__':
-    demo()
+    #demo()
+    search_by_keyword(sys.argv[1])
