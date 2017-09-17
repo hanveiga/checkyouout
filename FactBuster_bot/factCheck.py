@@ -1,3 +1,8 @@
+## telegram bot: @factbuster_bot Name: WhatTheFAct
+# adapted code from echobot.py example
+# Query to telegram returns the statement/sentence/content's reliability of information through checking various articles published
+# on reuters. 
+
 import json
 import requests
 import time
@@ -59,9 +64,9 @@ def echo_all(updates):
             if label == "discuss":
                 factcheck = "This topic is debatable"
             elif label == "agree":
-                factcheck = "This topic agrees with reliable sources" 
+                factcheck = "This topic agrees with reliable sourcess" 
             elif label == "disagree":
-                factcheck = "This topic disagrees with content from a reliable sources"        
+                factcheck = "Hmmm... Seems like this phrase disagrees with content from reliable sources"        
             else: 
                 factcheck = "You might want to look into that topic against other sources"
            
