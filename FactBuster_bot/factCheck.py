@@ -2,7 +2,7 @@ import json
 import requests
 import time
 import urllib
-
+import os
 
 
 TOKEN = '417979782:AAFv5IMcPNYhKjQWX8ZoN6LO__P1nByauoQ'
@@ -40,7 +40,18 @@ def echo_all(updates):
     for update in updates["result"]:
         text = update["message"]["text"]
         chat = update["message"]["chat"]["id"]
-        send_message(text, chat)
+        query={"text": text}
+        print(query)
+        factUrl="http://localhost:8877/textcheck"
+        response = requests.post(factUrl, data=json.dumps(query))
+        data=json.loads(response.text)
+        results=data[0]['results']
+        label=results[0]['label']
+        print(label)
+
+        send_message(label, chat)
+       
+
 
 
 def get_last_chat_id_and_text(updates):

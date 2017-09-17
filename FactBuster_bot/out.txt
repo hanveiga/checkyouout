@@ -1,0 +1,38 @@
+[
+ {
+  "results": [
+   {
+    "label": "discuss",
+    "doc_id": "tag:reuters.com,2017:newsml_OV6YPQDPB:1",
+    "doc_text": "After latest N.Korea missile test, U.S. says it has military options"
+   },
+   {
+    "label": "discuss",
+    "doc_id": "tag:reuters.com,2017:newsml_WD6YUFFWN:2",
+    "doc_text": "EU to seek reassurance from U.S. over data protection"
+   },
+   {
+    "label": "discuss",
+    "doc_id": "tag:reuters.com,2017:newsml_WD6YPM88Z:2",
+    "doc_text": "Mexico foreign minister calls latest U.S. NAFTA proposal 'redundant'"
+   },
+   {
+    "label": "agree",
+    "doc_id": "tag:reuters.com,2017:newsml_WD6YPMBEV:2",
+    "doc_text": "China's Washington envoy says U.S. should stop threats over North Korea"
+   },
+   {
+    "label": "discuss",
+    "doc_id": "tag:reuters.com,2017:newsml_WD6YUGK7B:2",
+    "doc_text": "Chinese at the border are worried after new North Korea missile test"
+   },
+   {
+    "label": "discuss",
+    "doc_id": "tag:reuters.com,2017:newsml_WD6YUGZ7R:3",
+    "doc_text": "First cracks emerge in EU plan to raise online giants' tax bill"
+   }
+  ],
+  "text": "The U.S. will not go to war against North Korea.",
+  "id": 0
+ }
+]
