@@ -42,20 +42,24 @@ def echo_all(updates):
         chat = update["message"]["chat"]["id"]
         query={"text": text}
         print(query)
-        factUrl="http://localhost:8877/textcheck"
-        response = requests.post(factUrl, data=json.dumps(query))
-        data=json.loads(response.text)
-        label=data[0]["label"]
-        
-        print(label)
-        if label == "discuss":
-            factcheck = "This statement is debatable"
-        elif label == "agree":
-            factcheck = "This statement is agrees with reliable sources"   
-        else: 
-            factcheck = "You might want to look into that fact against other sources"
-       
-        send_message(factcheck, chat)
+        try:
+            factUrl="http://localhost:8877/textcheck"
+            response = requests.post(factUrl, data=json.dumps(query))
+            data=json.loads(response.text)
+            label=data[0]["label"]
+            print(label)
+            if label == "discuss":
+                factcheck = "This statement is debatable"
+            elif label == "agree":
+                factcheck = "This statement is agrees with reliable sources"   
+            else: 
+                factcheck = "You might want to look into that fact against other sources"
+           
+            send_message(factcheck, chat)
+
+        except:
+            factcheck='no result'
+            send_message(factcheck, chat)
 
 
 def get_last_chat_id_and_text(updates):
