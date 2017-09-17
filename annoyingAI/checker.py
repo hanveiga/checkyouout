@@ -5,6 +5,7 @@ import sys
 import urllib.request
 import urllib.error
 import nltk
+import numpy as np
 from collections import Counter
 from sklearn.externals import joblib
 from bs4 import BeautifulSoup
@@ -34,7 +35,7 @@ def topic_tfidf_filter(sender, vectorizer, sent, texts, keep_maximum):
 
 def simple_keyword_extractor(sent):
     print('Tokens: ', nltk.word_tokenize(sent))
-    return [w for w in nltk.word_tokenize(sent) if w.istitle()]
+    return [w for w in nltk.word_tokenize(sent) if w.isupper()] #istitle
 
 def simple_html_strip(url, minimum_word_count=10,
                       ssplitter=lambda s: s.split(' ')):
@@ -104,6 +105,7 @@ class Resource:
         self.srf = SRFDatasource()
         self.pm = PermidSender(token)
         self.vect = joblib.load(VECTORIZER)
+        self.i2w = {i:w for w, i in self.vect.vocabulary_.items()}
         
     def clean_text(self, url):
         return simple_html_strip(url)
@@ -126,8 +128,10 @@ class Resource:
         # + filter them based on our own `relevance_filter`
         # + `keep_maximum` number of them for labeling
         # + handle videos?
+        ids_headlines = []
         try:
             keywords = keyword_extractor(sent)
+            
             print('Keywords: ', keywords)
             if not keywords and keyword_extractor == simple_keyword_extractor:
                 # try to back-off to something stupid
@@ -139,9 +143,7 @@ class Resource:
                                                           mediaType='V', # video
                                                           verbose=True)
                 ids_headlines.extend(self.srf.search_by_keyword(keywords,
-                                                                verbose=True))
-            else:
-                ids_headlines = []
+                                                                verbose=True))    
         except urllib.error.HTTPError as e:
             print("Gracefully pretending it's not happening...")
             print('Keywords: ', keywords)
@@ -170,11 +172,19 @@ class Resource:
         print('Counter: ', Counter([l for l, _ in labels_scores]))
         #sent_dict['results'], sent_dict['label'] = [], None
         if related_docs:
-            majority_vote = Counter([l for l, _ in labels_scores]).most_common(1)[0][0]
-            if majority_vote in ['agree', 'disagree', 'discuss']:
-                sent_dict['label'] = majority_vote
+            top = Counter([l for l, _ in labels_scores]).most_common(2)
+            #majority_vote = Counter([l for l, _ in labels_scores]).most_common(1)[0][0]
+            if top[0][0] in ['agree', 'disagree']:
+                vote = top[0][0]
+            elif len(top) > 1 and top[1][0] in ['agree', 'disagree'] and top[0][1] < top[1][1]*3:
+                vote = top[1][0]
+            else:
+                vote = Counter([l for l, _ in labels_scores]).most_common(1)[0][0]
+            if vote in ['agree', 'disagree', 'discuss']:
+            #if majority_vote in ['agree', 'disagree', 'discuss']:
+                sent_dict['label'] = vote #majority_vote
                 sent_dict['results'] = [{'doc_id': doc['doc_id'], 'doc_text': doc['text']}
-                    for (l, _), doc in zip(labels_scores, related_docs) if l == majority_vote]
+                    for (l, _), doc in zip(labels_scores, related_docs) if l == vote] #majority_vote
                 # srf urn hack
                 for doc in sent_dict['results']:
                     if doc['doc_id'].startswith('urn'):
