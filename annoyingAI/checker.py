@@ -8,6 +8,7 @@ import nltk
 import numpy as np
 from collections import Counter
 from sklearn.externals import joblib
+from sklearn.feature_extraction.stop_words import ENGLISH_STOP_WORDS
 from bs4 import BeautifulSoup
 from nltk.util import ngrams
 MODELS_DIR = 'models'
@@ -25,8 +26,6 @@ from .search_stance import (get_named_entities, filter_results,
 from .permid import PermidSender, token
 from nltk.corpus import stopwords
 
-stopWords = set(stopwords.words('english'))
-n = 3
 def tfidf_filter(vectorizer, sent, texts, keep_maximum):
     filter_function = lambda s, t: compute_tfidf_relevance(vectorizer, s, t)
     return filter_results(sent, texts, filter_function, keep_maximum=keep_maximum)
@@ -38,7 +37,8 @@ def topic_tfidf_filter(sender, vectorizer, sent, texts, keep_maximum):
 def simple_keyword_extractor(sent):
     print('Tokens: ', nltk.word_tokenize(sent))
     return [w for w in nltk.word_tokenize(sent)
-            if w.istitle() and w.lower() not in stopWords and w.lower() not in ['.',',','"',"'"]] #istitle
+            if w.istitle() and w.lower() not in ENGLISH_STOP_WORDS and
+            w.lower() not in ['.',',','"',"'"]] #istitle
 
 def simple_html_strip(url, minimum_word_count=10,
                       ssplitter=lambda s: s.split(' ')):
