@@ -114,16 +114,15 @@ class Resource:
     
     def retrieve_related(self, sent, n=100,
                          keyword_extractor=simple_keyword_extractor,
-                         # keyword_extractor=get_named_entities with billing enabled and a credit card
+                         # keyword_extractor=get_named_entities  #with billing enabled and a credit card
                          relevance_filter=tfidf_filter,
                          keep_maximum=5):
         
-        
-        # using Reuters API, retrieve `n` relevant documents / videos
-        # and return as a list of ???
+        # + extact keywords from input sentence `sent`
+        # + using Reuters API, retrieve `n` relevant documents / videos
+        # + filter them based on our own `relevance_filter`
+        # + `keep_maximum` number of them for labeling
         # + handle videos?
-        # + clean texts...
-        #@TODO
         try:
             keywords = keyword_extractor(sent)
             if not keywords and keyword_extractor == simple_keyword_extractor:
