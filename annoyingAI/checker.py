@@ -17,7 +17,7 @@ VECTORIZER = os.path.join(SERIALIZED_DIR, 'vectorizer.pkl')
 DUMMY_TRUTH = 'article2.txt'
 
 from .baseline_model import Baseline as FactChecker
-from .reuters_datasource import ReutersDatasource
+#from .reuters_datasource import ReutersDatasource
 from .srf_datasource import SRFDatasource
 from .search_stance import (get_named_entities, filter_results,
     compute_topic_tfidf_relevance, compute_tfidf_relevance)
