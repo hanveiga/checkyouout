@@ -174,10 +174,10 @@ class Resource:
                 sent_dict['label'] = majority_vote
                 sent_dict['results'] = [{'doc_id': doc['doc_id'], 'doc_text': doc['text']}
                     for (l, _), doc in zip(labels_scores, related_docs) if l == majority_vote]
-            # srf urn hack
-            for doc in sent_dict['results']:
-                if doc['doc_id'].startswith('urn'):
-                    doc['video_url'] = 'http://tp.srgssr.ch/p/swi/inline?urn=' + doc['doc_id']
+                # srf urn hack
+                for doc in sent_dict['results']:
+                    if doc['doc_id'].startswith('urn'):
+                        doc['video_url'] = 'http://tp.srgssr.ch/p/swi/inline?urn=' + doc['doc_id']
         print('sent_dict: ', sent_dict)
         return sent_dict    
 
