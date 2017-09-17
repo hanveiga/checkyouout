@@ -10,7 +10,6 @@ from collections import Counter
 from sklearn.externals import joblib
 from sklearn.feature_extraction.stop_words import ENGLISH_STOP_WORDS
 from bs4 import BeautifulSoup
-from nltk.util import ngrams
 MODELS_DIR = 'models'
 SERIALIZED_DIR = 'serialisations'
 TEST_DIR = 'tests'
@@ -24,7 +23,7 @@ from .srf_datasource import SRFDatasource
 from .search_stance import (get_named_entities, filter_results,
     compute_topic_tfidf_relevance, compute_tfidf_relevance)
 from .permid import PermidSender, token
-from nltk.corpus import stopwords
+
 
 def tfidf_filter(vectorizer, sent, texts, keep_maximum):
     filter_function = lambda s, t: compute_tfidf_relevance(vectorizer, s, t)
@@ -37,8 +36,8 @@ def topic_tfidf_filter(sender, vectorizer, sent, texts, keep_maximum):
 def simple_keyword_extractor(sent):
     print('Tokens: ', nltk.word_tokenize(sent))
     return [w for w in nltk.word_tokenize(sent)
-            if w.istitle() and w.lower() not in ENGLISH_STOP_WORDS and
-            w.lower() not in ['.',',','"',"'"]] #istitle
+            if w.istitle() and w.lower() not in ENGLISH_STOP_WORDS]
+            #and w not in ['.',',','"',"'"]
 
 def simple_html_strip(url, minimum_word_count=10,
                       ssplitter=lambda s: s.split(' ')):
@@ -134,24 +133,24 @@ class Resource:
         ids_headlines = []
         try:
             keywords = keyword_extractor(sent)
-            
             print('Keywords: ', keywords)
             if not keywords and keyword_extractor != simple_keyword_extractor:
                 # try to back-off to something stupid
                 keywords = simple_keyword_extractor(sent)
-            #keywords = list(ngrams(list(keywords), n))
+            # we do some n-gram expansion
             step = 3
             ngs = [keywords[i:i+step] for i in range(1, len(keywords), step)]
-            print('ngrams', ngs)
+            print(step, '-ngrams', ngs)
             print('Keywords: ', keywords)
-            #if len(keywords)>0:
             for keyword in ngs:
                 print('keyword', keyword)
-                ids_headlines = ids_headlines + self.rd.search_by_keyword(keyword,
-                                                                      limit=10,
-                                                                      label='Politics',
-                                                                      mediaType='V', # video
-                                                                      verbose=True)
+                # Reuters search
+                ids_headlines.extend(self.rd.search_by_keyword(keyword,
+                                                               limit=10,
+                                                               label='Politics',
+                                                               mediaType='V', # video
+                                                               verbose=True))
+                # SRF search
                 ids_headlines.extend(self.srf.search_by_keyword(keyword,
                                                             verbose=True))    
         except urllib.error.HTTPError as e:
@@ -179,17 +178,16 @@ class Resource:
         # + simplest: B label and then by score
         # dummy_pick(sent_dict, labels_scores, related_docs)
         print('docs: ', related_docs)
-        print('Counter: ', Counter([l for l, _ in labels_scores]))
+        #print('Counter: ', Counter([l for l, _ in labels_scores]))
         #sent_dict['results'], sent_dict['label'] = [], None
         if related_docs:
-            top = Counter([l for l, _ in labels_scores]).most_common(2)
             #majority_vote = Counter([l for l, _ in labels_scores]).most_common(1)[0][0]
-            if top[0][0] in ['agree', 'disagree']:
-                vote = top[0][0]
-            elif len(top) > 1 and top[1][0] in ['agree', 'disagree'] and top[0][1] < top[1][1]*3:
-                vote = top[1][0]
-            else:
-                vote = Counter([l for l, _ in labels_scores]).most_common(1)[0][0]
+            top = [l for l, _ in Counter([l for l, _ in labels_scores]).most_common(2)]
+            if 'disagree' in top: vote = 'disagree'
+            elif 'agree' in top: vote = 'agree'
+            else: vote = top[0]
+            print('Counter: ', Counter([l for l, _ in labels_scores]))
+            print('Vote: ', vote)
             if vote in ['agree', 'disagree', 'discuss']:
             #if majority_vote in ['agree', 'disagree', 'discuss']:
                 sent_dict['label'] = vote #majority_vote
