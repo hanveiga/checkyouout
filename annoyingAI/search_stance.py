@@ -4,7 +4,6 @@ import json
 from sklearn.metrics.pairwise import cosine_distances
 from sklearn.externals import joblib
 
-from .analyze import analyze_entities
 from .permid import PermidSender, token
 
 SERIALIZED_DIR = 'serialisations'
@@ -13,6 +12,7 @@ VECTORIZER = os.path.join(SERIALIZED_DIR, 'vectorizer.pkl')
 GOOGLEAPIKEY = 'AIzaSyDjPD2VBeUpBtxm6rN-UM6BFvnHtSAHIJo'
 
 def get_named_entities(sentence):
+    from .analyze import analyze_entities
     response = analyze_entities(sentence)
     named_entities = []
     for entity in response['entities']:

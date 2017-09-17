@@ -160,6 +160,7 @@ class Resource:
         # + simplest: B label and then by score
         # dummy_pick(sent_dict, labels_scores, related_docs)
         print('docs: ', related_docs)
+        print('Counter: ', Counter([l for l, _ in labels_scores]))
         if related_docs:
             majority_vote = Counter([l for l, _ in labels_scores]).most_common(1)[0][0]
             if majority_vote in ['agree', 'disagree', 'discuss']:

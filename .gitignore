@@ -112,3 +112,7 @@ google-services.json
 freeline.py
 freeline/
 freeline_project_description.json
+
+
+# Python binaries
+*.pyc
