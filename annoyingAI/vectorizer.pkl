@@ -1,0 +1,1 @@
+../serialisations/vectorizer.pkl
