@@ -51,7 +51,9 @@ def echo_all(updates):
             if label == "discuss":
                 factcheck = "This statement is debatable"
             elif label == "agree":
-                factcheck = "This statement is agrees with reliable sources"   
+                factcheck = "This statement is agrees with reliable sources" 
+            elif label == "disagree":
+                factcheck = "This statement is disagrees to content from reliable sources"        
             else: 
                 factcheck = "You might want to look into that fact against other sources"
            
