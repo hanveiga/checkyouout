@@ -9,7 +9,7 @@ import numpy as np
 from collections import Counter
 from sklearn.externals import joblib
 from bs4 import BeautifulSoup
-
+from nltk.util import ngrams
 MODELS_DIR = 'models'
 SERIALIZED_DIR = 'serialisations'
 TEST_DIR = 'tests'
@@ -23,8 +23,10 @@ from .srf_datasource import SRFDatasource
 from .search_stance import (get_named_entities, filter_results,
     compute_topic_tfidf_relevance, compute_tfidf_relevance)
 from .permid import PermidSender, token
+from nltk.corpus import stopwords
 
-
+stopWords = set(stopwords.words('english'))
+n = 3
 def tfidf_filter(vectorizer, sent, texts, keep_maximum):
     filter_function = lambda s, t: compute_tfidf_relevance(vectorizer, s, t)
     return filter_results(sent, texts, filter_function, keep_maximum=keep_maximum)
@@ -35,7 +37,8 @@ def topic_tfidf_filter(sender, vectorizer, sent, texts, keep_maximum):
 
 def simple_keyword_extractor(sent):
     print('Tokens: ', nltk.word_tokenize(sent))
-    return [w for w in nltk.word_tokenize(sent) if w.isupper()] #istitle
+    return [w for w in nltk.word_tokenize(sent)
+            if w.istitle() and w.lower() not in stopWords and w.lower() not in ['.',',','"',"'"]] #istitle
 
 def simple_html_strip(url, minimum_word_count=10,
                       ssplitter=lambda s: s.split(' ')):
@@ -133,21 +136,28 @@ class Resource:
             keywords = keyword_extractor(sent)
             
             print('Keywords: ', keywords)
-            if not keywords and keyword_extractor == simple_keyword_extractor:
+            if not keywords and keyword_extractor != simple_keyword_extractor:
                 # try to back-off to something stupid
                 keywords = simple_keyword_extractor(sent)
-            if keywords:
-                ids_headlines = self.rd.search_by_keyword(keywords,
-                                                          limit=20,
-                                                          label='Politics',
-                                                          mediaType='V', # video
-                                                          verbose=True)
-                ids_headlines.extend(self.srf.search_by_keyword(keywords,
-                                                                verbose=True))    
+            #keywords = list(ngrams(list(keywords), n))
+            step = 3
+            ngs = [keywords[i:i+step] for i in range(1, len(keywords), step)]
+            print('ngrams', ngs)
+            print('Keywords: ', keywords)
+            #if len(keywords)>0:
+            for keyword in ngs:
+                print('keyword', keyword)
+                ids_headlines = ids_headlines + self.rd.search_by_keyword(keyword,
+                                                                      limit=10,
+                                                                      label='Politics',
+                                                                      mediaType='V', # video
+                                                                      verbose=True)
+                ids_headlines.extend(self.srf.search_by_keyword(keyword,
+                                                            verbose=True))    
         except urllib.error.HTTPError as e:
             print("Gracefully pretending it's not happening...")
             print('Keywords: ', keywords)
-        #related = dummy_retrieve(sent)
+        related = dummy_retrieve(sent)
         related = []
         for i, h in ids_headlines:
             if (i or i is not None):
