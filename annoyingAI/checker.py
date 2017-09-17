@@ -18,7 +18,7 @@ DUMMY_TRUTH = 'article2.txt'
 
 from .baseline_model import Baseline as FactChecker
 from .reuters_datasource import ReutersDatasource
-#from .srf_datasource import SRFDatasource
+from .srf_datasource import SRFDatasource
 from .search_stance import (get_named_entities, filter_results,
     compute_topic_tfidf_relevance, compute_tfidf_relevance)
 from .permid import PermidSender, token
@@ -33,7 +33,8 @@ def topic_tfidf_filter(sender, vectorizer, sent, texts, keep_maximum):
     return filter_results(sent, texts, filter_function, keep_maximum=keep_maximum)
 
 def simple_keyword_extractor(sent):
-    return [w for w in nltk.word_tokenize(sent) if w.isupper()]
+    print('Tokens: ', nltk.word_tokenize(sent))
+    return [w for w in nltk.word_tokenize(sent) if w.istitle()]
 
 def simple_html_strip(url, minimum_word_count=10,
                       ssplitter=lambda s: s.split(' ')):
@@ -88,10 +89,9 @@ def error_msg(resp, body, code=falcon.HTTP_400):
 
 class Resource:
     # * get input, act on text type and output clean sentence-split text
-    #   + if url, get text, text process it??
-    #   + video???
-    #   + clean text
-    # * for each sentence, search for related documents /  videos via Reuters API
+    #   + if url, get text, text process it
+    #   + video, do speech2text piece by piece
+    # * for each sentence, search for related documents /  videos via Reuters & SRF API
     #   + clean the search docs
     #   + call model on them
     #   + produce labels
@@ -101,7 +101,7 @@ class Resource:
         self.fact_checker = FactChecker(path2model)
         print('Current dir: %s' % os.getcwd())
         self.rd = ReutersDatasource()
-        #self.srf = SRFDatasource()
+        self.srf = SRFDatasource()
         self.pm = PermidSender(token)
         self.vect = joblib.load(VECTORIZER)
         
@@ -128,6 +128,7 @@ class Resource:
         # + handle videos?
         try:
             keywords = keyword_extractor(sent)
+            print('Keywords: ', keywords)
             if not keywords and keyword_extractor == simple_keyword_extractor:
                 # try to back-off to something stupid
                 keywords = simple_keyword_extractor(sent)
@@ -137,6 +138,8 @@ class Resource:
                                                           label='Politics',
                                                           mediaType='V', # video
                                                           verbose=True)
+                ids_headlines.extend(self.srf.search_by_keyword(keywords,
+                                                                verbose=True))
             else:
                 ids_headlines = []
         except urllib.error.HTTPError as e:
@@ -171,6 +174,10 @@ class Resource:
                 sent_dict['label'] = majority_vote
                 sent_dict['results'] = [{'doc_id': doc['doc_id'], 'doc_text': doc['text']}
                     for (l, _), doc in zip(labels_scores, related_docs) if l == majority_vote]
+            # srf urn hack
+            for doc in sent_dict['results']:
+                if doc['doc_id'].startswith('urn'):
+                    doc['video_url'] = 'http://tp.srgssr.ch/p/swi/inline?urn=' + doc['doc_id']
         print('sent_dict: ', sent_dict)
         return sent_dict    
 
