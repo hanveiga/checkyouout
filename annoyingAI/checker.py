@@ -18,7 +18,7 @@ DUMMY_TRUTH = 'article2.txt'
 
 from .baseline_model import Baseline as FactChecker
 from .reuters_datasource import ReutersDatasource
-#from .srf_datasource import SRFDatasource
+from .srf_datasource import SRFDatasource
 from .search_stance import (get_named_entities, filter_results,
     compute_topic_tfidf_relevance, compute_tfidf_relevance)
 from .permid import PermidSender, token
@@ -101,7 +101,7 @@ class Resource:
         self.fact_checker = FactChecker(path2model)
         print('Current dir: %s' % os.getcwd())
         self.rd = ReutersDatasource()
-        self.srf = SRFDatasource()
+        #self.srf = SRFDatasource()
         self.pm = PermidSender(token)
         self.vect = joblib.load(VECTORIZER)
         
