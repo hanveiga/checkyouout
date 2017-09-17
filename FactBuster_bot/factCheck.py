@@ -47,15 +47,23 @@ def echo_all(updates):
             response = requests.post(factUrl, data=json.dumps(query))
             data=json.loads(response.text)
             label=data[0]["label"]
-            print(label)
+            results=data[0]["results"]
+            for b in results:
+                try:
+                    video_link=b["video_url"]
+                    send_message("You might want to watch this from SRF on this topic: " + video_link, chat)
+                except:
+                    print("none")#empty
+            
+
             if label == "discuss":
-                factcheck = "This statement is debatable"
+                factcheck = "This topic is debatable"
             elif label == "agree":
-                factcheck = "This statement agrees with reliable sources" 
+                factcheck = "This topic agrees with reliable sources" 
             elif label == "disagree":
-                factcheck = "This statement disagrees to content from reliable sources"        
+                factcheck = "This topic disagrees with content from a reliable sources"        
             else: 
-                factcheck = "You might want to look into that fact against other sources"
+                factcheck = "You might want to look into that topic against other sources"
            
             send_message(factcheck, chat)
 
