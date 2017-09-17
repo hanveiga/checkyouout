@@ -46,7 +46,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setLogo(R.mipmap.ic_launcher);
+        getSupportActionBar().setDisplayUseLogoEnabled(true);
         setContentView(R.layout.activity_main);
+
         myWebView = (WebView) findViewById(R.id.webview);
         myWebView.setWebViewClient(new myWebClient());
         //myWebView.loadUrl("https://news.google.com/");
@@ -234,9 +238,6 @@ public class MainActivity extends AppCompatActivity {
         public void TextCallback(String id) {
             if(!currentPage.contains("home")) {
                 getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.rgb(0, 179, 0)));
-            }
-            else {
-
             }
         }
 

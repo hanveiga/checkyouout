@@ -5,7 +5,7 @@ var aFunction = function(e){
 }
 
 function displayOverlay(text , id) {
-    $("<table id='overlay'><tbody><tr><td>" + text + "</td><td>" + id + "</td></tr></tbody></table>").css({
+    $("<table id='overlay'><tbody><tr><td>" + text + "</td></tr><tr><td>" + id + "</td></tr></tbody></table>").css({
         "position": "fixed",
         "top": "0px",
         "left": "0px",
@@ -39,7 +39,7 @@ function textHighlights(highlights) {
                                 .attr("href", "javascript:void(0)")
                                 .text("click me")
                                 .click(aFunction)
-                                .wrap("<img src='../images/icon.png' width='20px' height='20px'/>");
+                                .wrap("<img src='../images/icon.gif' width='20px' height='20px'/>")
                             );
                 }
 
@@ -53,6 +53,7 @@ function textHighlights(highlights) {
                                 .attr("href", "javascript:void(0)")
                                 .text("click me")
                                 .click(aFunction)
+                                .wrap("<img src='../images/icon.gif' width='20px' height='20px'/>")
                             );
                 }
 
@@ -66,6 +67,7 @@ function textHighlights(highlights) {
                                 .attr("href", "javascript:void(0)")
                                 .text("click me")
                                 .click(aFunction)
+                                .wrap("<img src='../images/icon.gif' width='20px' height='20px'/>")
                             );
                 }
             }
