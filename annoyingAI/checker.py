@@ -5,16 +5,33 @@ import sys
 import urllib.request
 import urllib.error
 import nltk
+from sklearn.externals import joblib
 from bs4 import BeautifulSoup
 
 MODELS_DIR = 'models'
 SERIALIZED_DIR = 'serialisations'
 TEST_DIR = 'tests'
 BASELINE = os.path.join(SERIALIZED_DIR, 'baselinev2.pkl')
+VECTORIZER = os.path.join(SERIALIZED_DIR, 'vectorizer.pkl')
 DUMMY_TRUTH = 'article2.txt'
 
 from .baseline_model import Baseline as FactChecker
 from .reuters_datasource import ReutersDatasource
+from .search_stance import (get_named_entities, filter_results,
+    compute_topic_tfidf_relevance, compute_tfidf_relevance)
+from .permid import PermidSender, token
+
+
+def tfidf_filter(vectorizer, sent, texts, keep_maximum):
+    filter_function = lambda s, t: compute_tfidf_relevance(vectorizer, s, t)
+    return filter_results(sent, texts, filter_function, keep_maximum=keep_maximum)
+
+def topic_tfidf_filter(sender, vectorizer, sent, texts, keep_maximum):
+    filter_function = lambda s, t: compute_topic_tfidf_relevance(sender, vectorizer, s, t)
+    return filter_results(sent, texts, filter_function, keep_maximum=keep_maximum)
+
+def simple_keyword_extractor(sent):
+    return [w for w in nltk.word_tokenize(sent) if w.isupper()]
 
 def simple_html_strip(url, minimum_word_count=10,
                       ssplitter=lambda s: s.split(' ')):
@@ -78,10 +95,12 @@ class Resource:
     #   + produce labels
     # * pick subset of retrieved docs
     # * return urls, xmls for these docs / videos
-    def __init__(self, path2model=BASELINE):
+    def __init__(self, path2model=BASELINE, path2vectorizer=VECTORIZER):
         self.fact_checker = FactChecker(path2model)
         print('Current dir: %s' % os.getcwd())
         self.rd = ReutersDatasource()
+        self.pm = PermidSender(token)
+        self.vect = joblib.load(VECTORIZER)
         
     def clean_text(self, url):
         return simple_html_strip(url)
@@ -93,14 +112,23 @@ class Resource:
         # predict labels and probability scores for pairs of (sent, related_doc)
         return [self.fact_checker.give_label(sent, doc['text']) for doc in related_docs]
     
-    def retrieve_related(self, sent, n=100):
+    def retrieve_related(self, sent, n=100,
+                         keyword_extractor=simple_keyword_extractor,
+                         # keyword_extractor=get_named_entities with billing enabled and a credit card
+                         relevance_filter=tfidf_filter,
+                         keep_maximum=5):
+        
+        
         # using Reuters API, retrieve `n` relevant documents / videos
         # and return as a list of ???
         # + handle videos?
         # + clean texts...
         #@TODO
-        keywords = [w for w in nltk.word_tokenize(sent) if w.isupper()]
         try:
+            keywords = keyword_extractor(sent)
+            if not keywords and keyword_extractor == simple_keyword_extractor:
+                # try to back-off to something stupid
+                keywords = simple_keyword_extractor(sent)
             if keywords:
                 ids_headlines = self.rd.search_by_keyword(keywords,
                                                           limit=20,
@@ -118,6 +146,13 @@ class Resource:
             if (i or i is not None):
                 related.append({'doc_id':i, 'text':h})
                 print('Related text: ', h)
+            else: print('Seems nothing returned.')
+                
+        # use filter before labeling:
+        filtered = []
+        for rel, doc in relevance_filter(self.vect, sent, related, keep_maximum):
+            doc['rel_score'] = rel
+            filtered.append(doc)
         return related
     
     def pick_best(self, sent_dict, labels_scores, related_docs):
