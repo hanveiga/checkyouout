@@ -18,6 +18,7 @@ DUMMY_TRUTH = 'article2.txt'
 
 from .baseline_model import Baseline as FactChecker
 from .reuters_datasource import ReutersDatasource
+from .srf_datasource import SRFDatasource
 from .search_stance import (get_named_entities, filter_results,
     compute_topic_tfidf_relevance, compute_tfidf_relevance)
 from .permid import PermidSender, token
@@ -100,6 +101,7 @@ class Resource:
         self.fact_checker = FactChecker(path2model)
         print('Current dir: %s' % os.getcwd())
         self.rd = ReutersDatasource()
+        self.srf = SRFDatasource()
         self.pm = PermidSender(token)
         self.vect = joblib.load(VECTORIZER)
         
@@ -162,7 +164,7 @@ class Resource:
         # dummy_pick(sent_dict, labels_scores, related_docs)
         print('docs: ', related_docs)
         print('Counter: ', Counter([l for l, _ in labels_scores]))
-        sent_dict['results'], sent_dict['label'] = [], None
+        #sent_dict['results'], sent_dict['label'] = [], None
         if related_docs:
             majority_vote = Counter([l for l, _ in labels_scores]).most_common(1)[0][0]
             if majority_vote in ['agree', 'disagree', 'discuss']:
@@ -194,7 +196,8 @@ class Resource:
             related_docs = self.retrieve_related(sent)
             labels_scores = self.label_retrieved(sent, related_docs)
             output = self.pick_best(sent_dict, labels_scores, related_docs)
-            if not sent_dict['results']: continue  # Why is this not filtered??
+            if ('results' not in sent_dict or
+                not sent_dict['results']): continue  # Why is this not filtered??
             outputs.append(output)
         print('Outputs: ', outputs)
         body = json.dumps(outputs, indent=True)
