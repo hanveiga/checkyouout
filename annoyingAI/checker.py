@@ -5,6 +5,7 @@ import sys
 import urllib.request
 import urllib.error
 import nltk
+from collections import Counter
 from sklearn.externals import joblib
 from bs4 import BeautifulSoup
 
@@ -116,7 +117,7 @@ class Resource:
                          keyword_extractor=simple_keyword_extractor,
                          # keyword_extractor=get_named_entities  #with billing enabled and a credit card
                          relevance_filter=tfidf_filter,
-                         keep_maximum=5):
+                         keep_maximum=6):
         
         # + extact keywords from input sentence `sent`
         # + using Reuters API, retrieve `n` relevant documents / videos
@@ -157,7 +158,16 @@ class Resource:
     def pick_best(self, sent_dict, labels_scores, related_docs):
         # rank retrieved docs for output
         # + simplest: B label and then by score
-        return dummy_pick(sent_dict, labels_scores, related_docs)
+        # dummy_pick(sent_dict, labels_scores, related_docs)
+        print('docs: ', related_docs)
+        if related_docs:
+            majority_vote = Counter([l for l, _ in labels_scores]).most_common(1)[0][0]
+            if majority_vote in ['agree', 'disagree', 'discuss']:
+                sent_dict['label'] = majority_vote
+                sent_dict['results'] = [{'doc_id': doc['doc_id'], 'doc_text': doc['text']}
+                    for (l, _), doc in zip(labels_scores, related_docs) if l == majority_vote]
+        print('sent_dict: ', sent_dict)
+        return sent_dict    
 
     def on_post(self, req, resp):
         data = json.loads(req.stream.read().decode('utf8'))
