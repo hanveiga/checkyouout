@@ -23,7 +23,7 @@ class SRFDatasource:
         #return fromstring(rawd)  # parse xml
         return json.loads(rawd.decode('utf8'))
 
-    def search_by_keyword(self, keywords, pageSize=50, verbose=True):
+    def search_by_keyword(self, keywords, pageSize=4, verbose=True):
         keywords = ' '.join(keywords)
         if verbose: print('Search query: ', keywords)
         id_results = []
@@ -39,7 +39,7 @@ class SRFDatasource:
                     id_results.append((urn, description))
         except Exception as e:
             raise e
-        if verbose: print('Search results: ', id_results)
+        #if verbose: print('Search results: ', id_results)
         return id_results
 
 

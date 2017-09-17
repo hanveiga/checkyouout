@@ -155,7 +155,8 @@ class Resource:
                 
         # use filter before labeling:
         filtered = []
-        print('Rel: ', (lambda v, s, t, m: (None, t))(self.vect, sent, related, keep_maximum))
+        print('Rel: ', relevance_filter(self.vect, sent, related, keep_maximum))
+              #(lambda v, s, t, m: (None, t))(self.vect, sent, related, keep_maximum))
         for rel, doc in relevance_filter(self.vect, sent, related, keep_maximum):
             doc['rel_score'] = rel
             filtered.append(doc)
