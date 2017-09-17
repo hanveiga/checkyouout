@@ -62,7 +62,7 @@ def echo_all(updates):
             
 
             if label == "discuss":
-                factcheck = "This topic is debatable"
+                factcheck = "This statement/topic is debatable"
             elif label == "agree":
                 factcheck = "This topic agrees with reliable sourcess" 
             elif label == "disagree":
@@ -74,7 +74,7 @@ def echo_all(updates):
 
         except:
             factcheck='no result'
-            send_message(factcheck, chat)
+            #send_message(factcheck, chat)
 
 
 def get_last_chat_id_and_text(updates):
