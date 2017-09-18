@@ -2,7 +2,7 @@
 Hack Zurich 2017 project
 
 ## About
-The topic of reliability of news has been on the spotlight recently, mainly through the proliferation of fake news and alternative facts. In this project, we provide a prototype service with the intent to provide a judgement on the verificability of a statement by using the Reuters search and retrieval API as a reliable source. 
+The topic of reliability of news has been on the spotlight recently, mainly through the proliferation of fake news and alternative facts. In this project, we develop a prototype service with the intent to provide a judgement on the verificability of a statement by using the Reuters and SRF search and retrieval APIs as reliable sources. More info: https://devpost.com/software/h-jcxp24
 
 ## Setting up
 
